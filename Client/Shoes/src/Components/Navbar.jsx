@@ -1,44 +1,48 @@
 import React from 'react';
+import { FaHome, FaBox, FaShoppingCart, FaUserCircle } from 'react-icons/fa';
+
 
 const Navbar = () => {
   return (
-    <nav className="bg-gradient-to-r from-red-500 via-red-500 to-red-500 p-5 shadow-lg">
+    <nav className="bg-gradient-to-r from-red-600 via-red-700 to-red-800 p-5 shadow-lg">
       <div className="container mx-auto flex justify-between items-center">
         <a
           href="/"
-          className="text-white font-bold text-3xl hover:text-red-200 transition-transform transform hover:scale-110"
+          className="text-white font-bold text-3xl hover:text-red-200 transition-transform transform hover:scale-110 flex items-center"
         >
           Sports Shoes
         </a>
-        <ul className="flex space-x-8">
+        <ul className="flex space-x-8 items-center">
           <li>
             <a
               href="/"
-              className="text-white text-lg font-medium hover:text-red-200 transition duration-300 ease-in-out hover:underline hover:scale-105 transform"
+              className="flex items-center text-white text-lg font-medium hover:text-red-200 transition duration-300 ease-in-out hover:underline hover:scale-105 transform"
             >
-              Home
+              <FaHome className="mr-1" /> Home
             </a>
           </li>
           <li>
             <a
-              href="/products"
-              className="text-white text-lg font-medium hover:text-red-200 transition duration-300 ease-in-out hover:underline hover:scale-105 transform"
+              href="/product"
+              className="flex items-center text-white text-lg font-medium hover:text-red-200 transition duration-300 ease-in-out hover:underline hover:scale-105 transform"
             >
-              Products
+              <FaBox className="mr-1" /> Products
             </a>
           </li>
           <li>
             <a
               href="/cart"
-              className="text-white text-lg font-medium hover:text-red-200 transition duration-300 ease-in-out hover:underline hover:scale-105 transform"
+              className="flex items-center text-white text-lg font-medium hover:text-red-200 transition duration-300 ease-in-out hover:underline hover:scale-105 transform"
             >
-              Cart
+              <FaShoppingCart className="mr-1" /> Cart
             </a>
           </li>
         </ul>
+        
       </div>
     </nav>
   );
 };
 
 export default Navbar;
+

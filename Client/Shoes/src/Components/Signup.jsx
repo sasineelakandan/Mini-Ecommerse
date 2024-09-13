@@ -4,17 +4,48 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faUser, faEnvelope, faLock, faPhone, faArrowRight } from '@fortawesome/free-solid-svg-icons';
 import { faFacebookF, faTwitter, faGoogle } from '@fortawesome/free-brands-svg-icons';
 import axios from 'axios';
+import 'react-toastify/dist/ReactToastify.css'
+import { useNavigate } from 'react-router-dom';
+import { ToastContainer, toast } from "react-toastify";
 const SignUpPage = () => {
   const { register, handleSubmit, formState: { errors } } = useForm();
-
+  const navigate=useNavigate()
   const onSubmit = (data) => {
-    
-  };
+    axios.post('http://localhost:8001/signup', data,{withCredentials:true})
+    .then(response => {
+      if (response.data) {
+        toast.success('Success! Redirecting...', {
+          
+          autoClose: 1000, // duration for toast visibility
+        });
+        
+        // Navigate after showing the toast
+        setTimeout(() => {
+          navigate('/');
+        }, 1000); // Delay the navigation to allow the toast to be visible
+      }
+      
+  }).catch(err=>{
+   
+      toast.error('This is an error message!', {
+        position: "top-right",
+        autoClose: 5000,  // Close the toast automatically after 5 seconds
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "colored", // You can use other themes like 'dark', 'light', etc.
+      });
+   
+  });
+}
 
   return (
     <div className="h-screen flex items-center justify-center p-4 bg-gradient-to-r from-red-500 via-red-600 to-red-700">
       <div className="bg-white bg-opacity-10 backdrop-blur-lg rounded-3xl p-10 shadow-2xl w-full max-w-md transform hover:scale-105 transition-all duration-300">
         <h2 className="text-4xl font-extrabold text-white mb-8 text-center animate-pulse">Sign Up</h2>
+        <ToastContainer />
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
           <div className="input-field relative">
             <input
@@ -88,7 +119,7 @@ const SignUpPage = () => {
         </form>
         <p className="text-white text-center mt-6">
           Already have an account?{' '}
-          <a href="/" className="font-bold hover:underline text-red-200">
+          <a href="/login" className="font-bold hover:underline text-red-200">
             Log in
           </a>
         </p>

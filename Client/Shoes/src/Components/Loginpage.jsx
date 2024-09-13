@@ -3,12 +3,47 @@ import { useForm } from 'react-hook-form';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEnvelope, faLock, faArrowRight } from '@fortawesome/free-solid-svg-icons';
 import { faFacebookF, faTwitter, faGoogle } from '@fortawesome/free-brands-svg-icons';
-
+import { useNavigate } from 'react-router-dom';
+import { ToastContainer, toast } from "react-toastify";
+import { useDispatch} from 'react-redux';
+import axios from 'axios';
+import 'react-toastify/dist/ReactToastify.css'
 const LoginPage = () => {
   const { register, handleSubmit, formState: { errors } } = useForm();
-
+  const navigate=useNavigate()
+  const dispatch = useDispatch();
   const onSubmit = (data) => {
-    console.log(data);
+    axios.post('http://localhost:8001/login', data,{withCredentials:true})
+    .then(response => {
+      if (response.data) {
+        console.log(response.data.user)
+        dispatch(setUser(response.data.user));
+        toast.success('Success! Redirecting...', {
+          
+          autoClose: 1000, // duration for toast visibility
+        });
+        
+        // Navigate after showing the toast
+        setTimeout(() => {
+          navigate('/');
+        }, 1000); // Delay the navigation to allow the toast to be visible
+      }
+      
+  }).catch(err=>{
+    toast.error('Somthing error! Please Cheack your email & Password', {
+      position: "top-right",
+      autoClose: 2000,  // Close the toast automatically after 5 seconds
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+      style: {
+        background: '#ffffff',  // White background
+        color: '#000000',       // Black text color for contrast
+      },
+    });
+  })
   };
 
   return (
@@ -16,6 +51,8 @@ const LoginPage = () => {
       <div className="bg-white bg-opacity-10 backdrop-blur-lg rounded-3xl p-10 shadow-2xl w-full max-w-md transform hover:scale-105 transition-all duration-300">
         <h2 className="text-4xl font-extrabold text-white mb-8 text-center animate-pulse">Login</h2>
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+        <ToastContainer />
+
           <div className="input-field relative">
             <input
               {...register('email', { 
