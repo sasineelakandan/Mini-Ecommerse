@@ -5,54 +5,54 @@ import { faEnvelope, faLock, faArrowRight } from '@fortawesome/free-solid-svg-ic
 import { faFacebookF, faTwitter, faGoogle } from '@fortawesome/free-brands-svg-icons';
 import { useNavigate } from 'react-router-dom';
 import { ToastContainer, toast } from "react-toastify";
-import { useDispatch} from 'react-redux';
-import { setUser } from '../Redux/Slice';
+import { useDispatch } from 'react-redux';
+import { setAdmin } from '../Redux/Slice';
 import axios from 'axios';
 import 'react-toastify/dist/ReactToastify.css'
-const LoginPage = () => {
+
+const AdminLoginPage = () => {
   const { register, handleSubmit, formState: { errors } } = useForm();
-  const navigate=useNavigate()
+  const navigate = useNavigate();
   const dispatch = useDispatch();
+
   const onSubmit = (data) => {
-    axios.post('http://localhost:8001/login', data,{withCredentials:true})
-    .then(response => {
-      if (response.data) {
-        console.log(response.data.user)
-        dispatch(setUser(response.data.user));
-        toast.success('Success! Redirecting...', {
+    axios.post('http://localhost:8001/adminlogin', data, { withCredentials: true })
+      .then(response => {
+        if (response.data) {
+          console.log(response.data);
+          dispatch(setAdmin(response.data.AdminVer));
+          toast.success('Success! Redirecting...', {
+            autoClose: 1000, // duration for toast visibility
+          });
           
-          autoClose: 1000, // duration for toast visibility
+          // Navigate after showing the toast
+          setTimeout(() => {
+            navigate('/admin');
+          }, 1000); // Delay the navigation to allow the toast to be visible
+        }
+      }).catch(err => {
+        toast.error('Something went wrong! Please check your email & password.', {
+          position: "top-right",
+          autoClose: 2000,  // Close the toast automatically after 2 seconds
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          style: {
+            background: '#ffffff',  // White background
+            color: '#000000',       // Black text color for contrast
+          },
         });
-        
-        // Navigate after showing the toast
-        setTimeout(() => {
-          navigate('/');
-        }, 1000); // Delay the navigation to allow the toast to be visible
-      }
-      
-  }).catch(err=>{
-    toast.error('Somthing error! Please Cheack your email & Password', {
-      position: "top-right",
-      autoClose: 2000,  // Close the toast automatically after 5 seconds
-      hideProgressBar: false,
-      closeOnClick: true,
-      pauseOnHover: true,
-      draggable: true,
-      progress: undefined,
-      style: {
-        background: '#ffffff',  // White background
-        color: '#000000',       // Black text color for contrast
-      },
-    });
-  })
+      });
   };
 
   return (
     <div className="h-screen flex items-center justify-center p-4 bg-gradient-to-r from-red-500 via-red-600 to-red-700">
       <div className="bg-white bg-opacity-10 backdrop-blur-lg rounded-3xl p-10 shadow-2xl w-full max-w-md transform hover:scale-105 transition-all duration-300">
-        <h2 className="text-4xl font-extrabold text-white mb-8 text-center animate-pulse">Login</h2>
+        <h2 className="text-4xl font-extrabold text-white mb-8 text-center animate-pulse">Admin Login</h2>
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-        <ToastContainer />
+          <ToastContainer />
 
           <div className="input-field relative">
             <input
@@ -118,4 +118,4 @@ const LoginPage = () => {
   );
 };
 
-export default LoginPage;
+export default AdminLoginPage;

@@ -1,4 +1,5 @@
 import User from "../Model/UserModel";
+import Product from "../Model/ProductModel";
 import { Request,Response,NextFunction } from "express";
 const pkg=require('bcryptjs');
 const bcrypt =require('bcryptjs') 
@@ -109,7 +110,17 @@ interface SignupData {
     }
   };
   
-  
+  export const ProductPage=async(req:Request,res:Response)=>{
+    try{
+      console.log('hai')
+      const Products=await Product.find({})
+      res.send(Products)
+
+    }catch(err){
+      console.log(err)
+    }
+
+  }
 
 
   

@@ -11,6 +11,7 @@ import mongoose from 'mongoose';
 import bodyParser from 'body-parser';
 import { DATABASE_URL,PORT,ORIGIN } from './utils/config';
 import AuthRoute from './Route/UserRoutes';
+import AdminRoute from './Route/AdminRoute';
 
 
 const app: Application = express();
@@ -35,6 +36,7 @@ app.use(cors({
 app.use(cookieParser());
 app.use(express.json());
 app.use(AuthRoute)
+app.use(AdminRoute)
 
 const server = app.listen(port, () => {
   console.log(`Server is running on port ${port}`);

@@ -1,27 +1,13 @@
-import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
-// Define the types for the state
-interface UserState {
-  user: User | null;
-  isAdmin: boolean;
-}
+import { createSlice } from '@reduxjs/toolkit';
 
-// Define the type for the user object (adjust the fields according to your needs)
-interface User {
-  id: string;
-  name: string;
-  email: string;
-  
-}
-
-// Get the initial state from localStorage with proper types
-const initialState: UserState = {
+const initialState = {
   user: (() => {
     const storedUser = localStorage.getItem('user');
     try {
-      return storedUser ? (JSON.parse(storedUser) as User) : null;
+      return storedUser ? JSON.parse(storedUser) : null;
     } catch {
-      return null;
+      return null; // If parsing fails, return null
     }
   })(),
   
@@ -30,7 +16,7 @@ const initialState: UserState = {
     try {
       return storedIsAdmin ? JSON.parse(storedIsAdmin) : false;
     } catch {
-      return false;
+      return false; // If parsing fails, return false
     }
   })(),
 };
@@ -39,9 +25,8 @@ const userSlice = createSlice({
   name: 'user',
   initialState,
   reducers: {
-    // Define type for setUser action using PayloadAction
-    setUser: (state, action: PayloadAction<User>) => {
-        console.log(action.payload)
+    setUser: (state, action) => {
+      console.log(action.payload)
       state.user = action.payload;
       localStorage.setItem('user', JSON.stringify(action.payload));
     },
@@ -51,7 +36,7 @@ const userSlice = createSlice({
       localStorage.removeItem('user');
       localStorage.removeItem('isAdmin');
     },
-    setAdmin: (state, action: PayloadAction<boolean>) => {
+    setAdmin: (state, action) => {
       state.isAdmin = action.payload;
       localStorage.setItem('isAdmin', JSON.stringify(action.payload));
     },

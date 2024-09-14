@@ -12,7 +12,7 @@ const CartPage = () => {
   const totalPrice = cartItems.reduce((total, item) => total + item.price * item.quantity, 0);
 
   return (
-    <div className="min-h-screen bg-gradient-to-r from-red-500 via-red-600 to-red-700 text-white">
+    <div className="min-h-screen bg-gradient-to-r from-white via-red-100 to-red-300 text-black">
       <Navbar />
       <div className="container mx-auto mt-10 p-5">
         <h2 className="text-4xl font-bold mb-8 text-center">

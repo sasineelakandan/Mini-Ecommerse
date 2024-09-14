@@ -3,7 +3,7 @@ import { FaHome, FaBox, FaShoppingCart } from 'react-icons/fa';
 import { useSelector } from 'react-redux';
 import logo from '../assets/vecteezy_creative-abstract-black-silhouette-running-shoe-design-logo_8956590.jpg';
 
-const Navbar = () => {
+const ANavbar = () => {
   const user = useSelector((state) => state.user.user);
 
   return (
@@ -37,4 +37,4 @@ const Navbar = () => {
   );
 };
 
-export default Navbar;
+export default ANavbar;
