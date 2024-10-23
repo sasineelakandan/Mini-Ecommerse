@@ -6,7 +6,7 @@ import express, { Application, } from 'express';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
 import mongoose from 'mongoose';
-
+const session= require('express-session')
 ;
 import bodyParser from 'body-parser';
 import { DATABASE_URL,PORT,ORIGIN } from './utils/config';
@@ -34,7 +34,12 @@ app.use(cors({
   credentials: true
 }));
 app.use(cookieParser());
-app.use(express.json());
+app.use(express.json())
+app.use(session({
+  secret: 'keyboard cat',
+  resave: true,
+  saveUninitialized: true
+}));
 app.use(AuthRoute)
 app.use(AdminRoute)
 

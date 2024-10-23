@@ -1,15 +1,22 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import Navbar from '../Components/Navbar';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTrash, faShoppingCart } from '@fortawesome/free-solid-svg-icons';
-import heroImage1 from '../assets/sanju-pandita-36MiHf2KKr8-unsplash.jpg';
-const CartPage = () => {
-  const cartItems = [
-    { id: 1, name: 'Nike Air Max', price: 120, quantity: 2, image: heroImage1 },
-    { id: 2, name: 'Adidas UltraBoost', price: 150, quantity: 1, image: heroImage1 },
-  ];
 
-  const totalPrice = cartItems.reduce((total, item) => total + item.price * item.quantity, 0);
+import axios from 'axios';
+const CartPage = () => {
+  const [cartItems,setCartItems]=useState([])
+  useEffect(()=>{
+    axios.get('http://localhost:8001/cartdetails',{withCredentials:true})
+    .then((response)=>{
+      if(response.data){
+        
+        setCartItems(response.data)
+      }
+    })
+  },[])
+
+  const totalPrice = cartItems.reduce((total, item) => total + item.productprice * item.productQuantity, 0);
 
   return (
     <div className="min-h-screen bg-gradient-to-r from-white via-red-100 to-red-300 text-black">
@@ -22,11 +29,11 @@ const CartPage = () => {
         {cartItems.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {cartItems.map((item) => (
-              <div key={item.id} className="bg-white bg-opacity-10 backdrop-blur-md p-5 rounded-lg shadow-lg transform hover:scale-105 transition-all duration-300">
-                <img src={item.image} alt={item.name} className="w-full h-40 object-cover rounded-md mb-4" />
-                <h3 className="text-2xl font-bold mb-2">{item.name}</h3>
-                <p className="text-lg">Price: ${item.price}</p>
-                <p className="text-lg">Quantity: {item.quantity}</p>
+              <div key={item.productId} className="bg-white bg-opacity-10 backdrop-blur-md p-5 rounded-lg shadow-lg transform hover:scale-105 transition-all duration-300">
+                <img src={item.productImage} alt={item.productName} className="w-full h-40 object-cover rounded-md mb-4" />
+                <h3 className="text-2xl font-bold mb-2">{item.productName}</h3>
+                <p className="text-lg">Price: ${item.productprice}</p>
+                <p className="text-lg">Quantity: {item.productQuantity}</p>
                 <div className="flex justify-between items-center mt-4">
                   <button className="bg-red-700 hover:bg-red-800 text-white px-4 py-2 rounded-lg transition duration-300">
                     <FontAwesomeIcon icon={faTrash} /> Remove

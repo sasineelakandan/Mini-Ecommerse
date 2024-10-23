@@ -4,6 +4,7 @@ import { FaHome, FaBox, FaShoppingCart, FaUsers, FaChartPie } from 'react-icons/
 import { useSelector } from 'react-redux';
 import { Doughnut } from 'react-chartjs-2';
 import 'chart.js/auto'; // Automatically imports necessary chart.js modules
+import ANavbar from './Adminnav';
 
 // Mock Data for Product Categories Doughnut chart
 const doughnutData = {
@@ -68,59 +69,7 @@ const AdminDashboard = () => {
 
   return (
     <div className="flex h-screen bg-gray-100">
-      {/* Sidebar */}
-      <div className="w-1/6 bg-gradient-to-b from-red-400 to-red-600 text-white p-5 shadow-lg">
-        <div className="flex items-center justify-center mb-8">
-          {/* Logo */}
-          <a className="flex items-center text-xl font-semibold" href="/" aria-label="Brand">
-            <FaChartPie className="w-10 h-auto mr-2" /> Admin Dashboard
-          </a>
-        </div>
-        
-        {/* Sidebar Links */}
-        <ul className="space-y-6">
-          <li>
-            <Link
-              to="/admin/home"
-              className="block py-3 px-4 rounded-lg hover:bg-red-700 hover:scale-105 transform transition duration-300 ease-in-out"
-            >
-              <FaHome className="inline mr-2" /> Home
-            </Link>
-          </li>
-          <li>
-            <Link
-              to="/admin/product"
-              className="block py-3 px-4 rounded-lg hover:bg-red-700 hover:scale-105 transform transition duration-300 ease-in-out"
-            >
-              <FaBox className="inline mr-2" /> Products
-            </Link>
-          </li>
-          <li>
-            <Link
-              to="/admin/orders"
-              className="block py-3 px-4 rounded-lg hover:bg-red-700 hover:scale-105 transform transition duration-300 ease-in-out"
-            >
-              <FaShoppingCart className="inline mr-2" /> Orders
-            </Link>
-          </li>
-          <li>
-            <Link
-              to="/admin/users"
-              className="block py-3 px-4 rounded-lg hover:bg-red-700 hover:scale-105 transform transition duration-300 ease-in-out"
-            >
-              <FaUsers className="inline mr-2" /> Users
-            </Link>
-          </li>
-        </ul>
-
-        {/* User Greeting */}
-        {user && (
-          <div className="mt-10 text-lg text-center text-white">
-            <span className="font-semibold">Hi, {user.Name}</span>
-          </div>
-        )}
-      </div>
-
+     <ANavbar/>
       {/* Main Content */}
       <div className="flex-grow p-10 bg-white">
         <h1 className="text-4xl font-bold text-red-500 mb-6">Admin Dashboard Overview</h1>

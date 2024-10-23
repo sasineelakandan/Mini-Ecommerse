@@ -7,6 +7,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import { uploadImageToFirebase } from '../Firebase/firebase.js'; // Update with the correct path
 import { useDispatch } from 'react-redux';
 import { setProducts } from '../Redux/ProductSlice.js';
+import ANavbar from './Adminnav.jsx';
 
 const ProductPage = () => {
   const dispatch=useDispatch()
@@ -91,10 +92,15 @@ const ProductPage = () => {
   };
 
   return (
-    <div className="min-h-screen p-6 bg-gradient-to-r from-red-500 via-red-600 to-red-700">
+    <div className="flex">
+    <ANavbar />  {/* Your Navbar is here */}
+    
+    <div className="min-h-screen p-6 bg-gradient-to-r from-red-500 via-red-600 to-red-700 flex-1">
       <ToastContainer />
       <div className="container mx-auto">
-        <h1 className="text-5xl font-extrabold text-white text-center mb-12 animate-pulse">Manage Products</h1>
+        <h1 className="text-5xl font-extrabold text-white text-center mb-12 animate-pulse">
+          Manage Products
+        </h1>
 
         <button
           onClick={() => setShowModal(true)}
@@ -109,8 +115,8 @@ const ProductPage = () => {
               <tr className="text-left bg-red-700">
                 <th className="py-2 px-4">Product Name</th>
                 <th className="py-2 px-4">Price</th>
-                <th className="py-2 px-4">Description</th> {/* Added description header */}
-                <th className="py-2 px-4">Quantity</th> {/* Added quantity header */}
+                <th className="py-2 px-4">Description</th>
+                <th className="py-2 px-4">Quantity</th>
                 <th className="py-2 px-4">Image</th>
                 <th className="py-2 px-4">Actions</th>
               </tr>
@@ -120,12 +126,12 @@ const ProductPage = () => {
                 <tr key={product._id} className="hover:bg-red-600 transition duration-200">
                   <td className="py-2 px-4">{product.name}</td>
                   <td className="py-2 px-4">${product.price}</td>
-                  <td className="py-2 px-4">{product.description}</td> {/* Display description */}
-                  <td className="py-2 px-4">{product.quantity}</td> {/* Display quantity */}
+                  <td className="py-2 px-4">{product.description}</td>
+                  <td className="py-2 px-4">{product.quantity}</td>
                   <td className="py-2 px-4">
-                    <img 
-                      src={product.imageUrl} 
-                      alt={product.name} 
+                    <img
+                      src={product.imageUrl}
+                      alt={product.name}
                       className="w-16 h-16 object-cover rounded-lg"
                     />
                   </td>
@@ -190,12 +196,12 @@ const ProductPage = () => {
                     className="hidden"
                   />
                 </label>
-                
+
                 {imagePreview && (
                   <div className="w-full flex justify-center mt-4">
-                    <img 
-                      src={imagePreview} 
-                      alt="Preview" 
+                    <img
+                      src={imagePreview}
+                      alt="Preview"
                       className="w-32 h-32 object-cover rounded-lg border-2 border-red-500"
                     />
                   </div>
@@ -221,6 +227,8 @@ const ProductPage = () => {
         )}
       </div>
     </div>
+  </div>
+    
   );
 };
 

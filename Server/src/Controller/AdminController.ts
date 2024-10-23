@@ -88,3 +88,12 @@ export const ProductLists=async(req:Request,res:Response)=>{
     console.log(err)
   }
 }
+
+export const userslist=async(req:Request,res:Response)=>{
+  try{
+    const users=await User.find({})
+     res.send(users)
+  }catch(err){
+    console.log(err)
+  }
+}

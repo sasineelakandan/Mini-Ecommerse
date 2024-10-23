@@ -1,192 +1,219 @@
-import React, { useState } from 'react';
-import Navbar from '../Components/Navbar';
+import React, { useState, useEffect } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faEdit, faTrashAlt, faSearch, faPlus } from '@fortawesome/free-solid-svg-icons';
+import { faTrash, faEdit } from '@fortawesome/free-solid-svg-icons';
+import { ToastContainer, toast } from 'react-toastify';
+import { useForm } from 'react-hook-form';
+import axios from 'axios';
+import 'react-toastify/dist/ReactToastify.css';
 
-const AdminUsersPage = () => {
-  const [users, setUsers] = useState([
-    { id: 1, name: 'John Doe', email: 'john@example.com', role: 'User' },
-    { id: 2, name: 'Jane Smith', email: 'jane@example.com', role: 'Admin' },
-  ]);
-  const [newUser, setNewUser] = useState({ name: '', email: '', role: 'User' });
-  const [searchTerm, setSearchTerm] = useState('');
-  const [editUser, setEditUser] = useState(null);
+import ANavbar from './Adminnav.jsx';
 
-  const handleAddUser = () => {
-    if (newUser.name && newUser.email) {
-      setUsers([...users, { ...newUser, id: users.length + 1 }]);
-      setNewUser({ name: '', email: '', role: 'User' });
-    }
-  };
+const UserManagementPage = () => {
+  const [users, setUsersState] = useState([]);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [selectedUser, setSelectedUser] = useState(null);
 
+  // Fetch users data
+  useEffect(() => {
+    axios
+      .get('http://localhost:8001/users', { withCredentials: true })
+      .then((response) => {
+        if (response.data) {
+          setUsersState(response.data);
+        }
+      })
+      .catch((error) => console.error(error));
+  }, []);
+
+  // Handle Delete User
   const handleDeleteUser = (id) => {
-    setUsers(users.filter((user) => user.id !== id));
+    axios
+      .delete(`http://localhost:8001/users/delete/${id}`)
+      .then(() => {
+        setUsersState(users.filter((user) => user._id !== id));
+        toast.success('User deleted successfully');
+      })
+      .catch((error) => toast.error('Failed to delete user'));
   };
 
+  // Open Edit Modal and set selected user data
   const handleEditUser = (user) => {
-    setEditUser(user);
+    setSelectedUser(user);
+    setIsEditModalOpen(true);
   };
 
-  const handleSaveEditUser = () => {
-    setUsers(
-      users.map((user) =>
-        user.id === editUser.id ? editUser : user
-      )
-    );
-    setEditUser(null);
+  // Close modal
+  const closeModal = () => {
+    setIsEditModalOpen(false);
   };
-
-  const filteredUsers = users.filter((user) =>
-    user.name.toLowerCase().includes(searchTerm.toLowerCase())
-  );
 
   return (
-    <div className="min-h-screen bg-gradient-to-r from-red-500 via-red-600 to-red-700 text-white">
-      <Navbar />
-      <div className="container mx-auto mt-10 p-5">
-        {/* Header */}
-        <div className="flex justify-between items-center mb-8">
-          <h1 className="text-4xl font-bold">User Management</h1>
-          <div className="flex items-center space-x-4">
-            <input
-              type="text"
-              className="px-4 py-2 rounded-lg text-black"
-              placeholder="Search Users..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-            />
-            <FontAwesomeIcon icon={faSearch} className="text-white text-xl" />
-          </div>
-        </div>
+    <div className="flex">
+      <ANavbar /> {/* Your Navbar here */}
 
-        {/* Add New User */}
-        <div className="bg-white bg-opacity-10 p-6 rounded-lg shadow-lg mb-10">
-          <h2 className="text-2xl font-bold mb-4">Add New User</h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <input
-              type="text"
-              className="px-4 py-2 rounded-lg text-black"
-              placeholder="Name"
-              value={newUser.name}
-              onChange={(e) => setNewUser({ ...newUser, name: e.target.value })}
-            />
-            <input
-              type="email"
-              className="px-4 py-2 rounded-lg text-black"
-              placeholder="Email"
-              value={newUser.email}
-              onChange={(e) => setNewUser({ ...newUser, email: e.target.value })}
-            />
-            <select
-              className="px-4 py-2 rounded-lg text-black"
-              value={newUser.role}
-              onChange={(e) => setNewUser({ ...newUser, role: e.target.value })}
-            >
-              <option value="User">User</option>
-              <option value="Admin">Admin</option>
-            </select>
-            <button
-              onClick={handleAddUser}
-              className="bg-yellow-400 text-black font-bold py-2 px-4 rounded-lg hover:bg-yellow-500 transition-transform transform hover:scale-105"
-            >
-              <FontAwesomeIcon icon={faPlus} /> Add User
-            </button>
-          </div>
-        </div>
+      <div className="min-h-screen p-6 bg-gradient-to-r from-red-500 via-red-600 to-red-700 flex-1">
+        <ToastContainer />
+        <div className="container mx-auto">
+          <h1 className="text-5xl font-extrabold text-white text-center mb-12 animate-pulse">
+            Manage Users
+          </h1>
 
-        {/* User Table */}
-        <div className="bg-white bg-opacity-10 p-6 rounded-lg shadow-lg">
-          <h2 className="text-2xl font-bold mb-4">Users</h2>
-          <table className="w-full table-auto">
-            <thead>
-              <tr className="bg-red-600">
-                <th className="px-4 py-2">ID</th>
-                <th className="px-4 py-2">Name</th>
-                <th className="px-4 py-2">Email</th>
-                <th className="px-4 py-2">Role</th>
-                <th className="px-4 py-2">Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {filteredUsers.map((user) => (
-                <tr key={user.id} className="bg-white bg-opacity-20">
-                  <td className="px-4 py-2">{user.id}</td>
-                  <td className="px-4 py-2">{user.name}</td>
-                  <td className="px-4 py-2">{user.email}</td>
-                  <td className="px-4 py-2">{user.role}</td>
-                  <td className="px-4 py-2 flex space-x-4">
-                    <button
-                      onClick={() => handleEditUser(user)}
-                      className="bg-blue-500 text-white font-bold py-2 px-4 rounded-lg hover:bg-blue-600 transition-transform transform hover:scale-105"
-                    >
-                      <FontAwesomeIcon icon={faEdit} /> Edit
-                    </button>
-                    <button
-                      onClick={() => handleDeleteUser(user.id)}
-                      className="bg-red-500 text-white font-bold py-2 px-4 rounded-lg hover:bg-red-600 transition-transform transform hover:scale-105"
-                    >
-                      <FontAwesomeIcon icon={faTrashAlt} /> Delete
-                    </button>
-                  </td>
+          <div className="overflow-x-auto bg-white bg-opacity-10 backdrop-blur-lg rounded-3xl shadow-2xl p-6">
+            <table className="min-w-full text-white">
+              <thead>
+                <tr className="text-left bg-red-700">
+                  <th className="py-2 px-4">User Name</th>
+                  <th className="py-2 px-4">Email</th>
+                  <th className="py-2 px-4">Phone</th>
+                  <th className="py-2 px-4">Actions</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-
-        {/* Edit User Modal */}
-        {editUser && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
-            <div className="bg-white text-black p-8 rounded-lg shadow-lg">
-              <h2 className="text-2xl font-bold mb-4">Edit User</h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <input
-                  type="text"
-                  className="px-4 py-2 rounded-lg"
-                  value={editUser.name}
-                  onChange={(e) =>
-                    setEditUser({ ...editUser, name: e.target.value })
-                  }
-                />
-                <input
-                  type="email"
-                  className="px-4 py-2 rounded-lg"
-                  value={editUser.email}
-                  onChange={(e) =>
-                    setEditUser({ ...editUser, email: e.target.value })
-                  }
-                />
-                <select
-                  className="px-4 py-2 rounded-lg"
-                  value={editUser.role}
-                  onChange={(e) =>
-                    setEditUser({ ...editUser, role: e.target.value })
-                  }
-                >
-                  <option value="User">User</option>
-                  <option value="Admin">Admin</option>
-                </select>
-                <div className="flex space-x-4 mt-4">
-                  <button
-                    onClick={handleSaveEditUser}
-                    className="bg-green-500 text-white font-bold py-2 px-4 rounded-lg hover:bg-green-600"
+              </thead>
+              <tbody>
+                {users.map((user) => (
+                  <tr
+                    key={user._id}
+                    className="hover:bg-red-600 transition duration-200"
                   >
-                    Save
-                  </button>
-                  <button
-                    onClick={() => setEditUser(null)}
-                    className="bg-gray-500 text-white font-bold py-2 px-4 rounded-lg hover:bg-gray-600"
-                  >
-                    Cancel
-                  </button>
-                </div>
-              </div>
-            </div>
+                    <td className="py-2 px-4">{user.Name}</td>
+                    <td className="py-2 px-4">{user.email}</td>
+                    <td className="py-2 px-4">{user.phone}</td>
+                    <td className="py-2 px-4">
+                      <button
+                        onClick={() => handleDeleteUser(user._id)}
+                        className="bg-gradient-to-r from-red-600 to-red-700 text-white py-2 px-4 rounded-lg hover:opacity-90 transition duration-300"
+                      >
+                        <FontAwesomeIcon icon={faTrash} />
+                      </button>
+                      <button
+                        onClick={() => handleEditUser(user)}
+                        className="bg-gradient-to-r from-red-600 to-red-700 text-white py-2 px-4 rounded-lg hover:opacity-90 transition duration-300 ml-2"
+                      >
+                        <FontAwesomeIcon icon={faEdit} />
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
-        )}
+
+          {/* Edit User Modal */}
+          {isEditModalOpen && (
+            <EditUserModal
+              user={selectedUser}
+              closeModal={closeModal}
+              setUsersState={setUsersState}
+              users={users}
+            />
+          )}
+        </div>
       </div>
     </div>
   );
 };
 
-export default AdminUsersPage;
+// EditUserModal Component
+const EditUserModal = ({ user, closeModal, setUsersState, users }) => {
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm({
+    defaultValues: {
+      Name: user.Name,
+      email: user.email,
+      phone: user.phone,
+    },
+  });
+
+  const onSubmit = (data) => {
+    axios
+      .put(`http://localhost:8001/users/edit/${user._id}`, data)
+      .then(() => {
+        setUsersState(
+          users.map((u) => (u._id === user._id ? { ...u, ...data } : u))
+        );
+        toast.success('User updated successfully');
+        closeModal();
+      })
+      .catch((error) => toast.error('Failed to update user'));
+  };
+
+  return (
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
+      <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-md">
+        <h2 className="text-2xl font-bold mb-4">Edit User</h2>
+        <form onSubmit={handleSubmit(onSubmit)}>
+          <div className="mb-4">
+            <label className="block text-gray-700">Name</label>
+            <input
+              {...register('Name', { required: 'Name is required' })}
+              className={`w-full px-4 py-2 border ${
+                errors.Name ? 'border-red-500' : 'border-gray-300'
+              } rounded-lg`}
+            />
+            {errors.Name && (
+              <p className="text-red-500 text-sm mt-1">{errors.Name.message}</p>
+            )}
+          </div>
+
+          <div className="mb-4">
+            <label className="block text-gray-700">Email</label>
+            <input
+              {...register('email', {
+                required: 'Email is required',
+                pattern: {
+                  value: /^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$/,
+                  message: 'Invalid email address',
+                },
+              })}
+              className={`w-full px-4 py-2 border ${
+                errors.email ? 'border-red-500' : 'border-gray-300'
+              } rounded-lg`}
+            />
+            {errors.email && (
+              <p className="text-red-500 text-sm mt-1">{errors.email.message}</p>
+            )}
+          </div>
+
+          <div className="mb-4">
+            <label className="block text-gray-700">Phone</label>
+            <input
+              {...register('phone', {
+                required: 'Phone is required',
+                pattern: {
+                  value: /^[0-9]{10}$/,
+                  message: 'Phone number must be 10 digits',
+                },
+              })}
+              className={`w-full px-4 py-2 border ${
+                errors.phone ? 'border-red-500' : 'border-gray-300'
+              } rounded-lg`}
+            />
+            {errors.phone && (
+              <p className="text-red-500 text-sm mt-1">{errors.phone.message}</p>
+            )}
+          </div>
+
+          <div className="flex justify-end">
+            <button
+              type="button"
+              onClick={closeModal}
+              className="bg-gray-300 text-gray-700 px-4 py-2 rounded-lg mr-2"
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              className="bg-red-600 text-white px-4 py-2 rounded-lg"
+            >
+              Save Changes
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
+};
+
+export default UserManagementPage;

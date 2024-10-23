@@ -1,26 +1,59 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Navbar from '../Components/Navbar';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faStar, faStarHalfAlt, faShoppingCart } from '@fortawesome/free-solid-svg-icons';
-import heroImage1 from '../assets/sanju-pandita-36MiHf2KKr8-unsplash.jpg';
+import { useParams, useNavigate } from 'react-router-dom';
+import axios from 'axios';
+import { useSelector } from 'react-redux';
+import { toast,ToastContainer } from 'react-toastify';
 const ProductDetailsPage = () => {
-  const [rating, setRating] = useState(0);
-  const [hoverRating, setHoverRating] = useState(0);
+  const { id } = useParams();
+  const [product, setProduct] = useState({});
+  const [quantity, setQuantity] = useState(1);
+  const navigate = useNavigate();
+  const user =useSelector((state)=>state.user.user)
+  
+  useEffect(() => {
+    // Fetch product details by ID
+    axios.get(`http://localhost:8001/Sviewpage?id=${id}`)
+      .then(response => setProduct(response.data))
+      .catch(error => console.error(error));
+  }, [id]);
 
-  const product = {
-    id: 1,
-    name: 'Nike Air Max',
-    description: 'The Nike Air Max provides unparalleled comfort with cutting-edge technology, making every step smooth and effortless.',
-    price: 120,
-    image: heroImage1,
-    reviews: [
-      { id: 1, user: 'John Doe', rating: 5, comment: 'Amazing product! Super comfortable and stylish.' },
-      { id: 2, user: 'Jane Smith', rating: 4.5, comment: 'Great shoe but slightly overpriced.' },
-    ],
+  // Handle adding product to cart with specified quantity
+  const handleAddToCart = (id) => {
+    
+    axios.post(`http://localhost:8001/addtocart`, { id:id, quantity,userId:user._id })
+      .then(response =>{
+        if(response.data){
+          toast.success('Success! AddtoCard', {
+          
+            autoClose: 1000, 
+          });
+        }else{
+          toast.error('Stock not Availaple!', {
+            position: "top-right",
+            autoClose: 5000,  // Close the toast automatically after 5 seconds
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: "colored", // You can use other themes like 'dark', 'light', etc.
+          })
+        }
+      })
+      .catch(error => console.error(error));
   };
 
-  const handleRatingClick = (rate) => {
-    setRating(rate);
+  // Increment quantity
+  const incrementQuantity = () => {
+    setQuantity(prevQuantity => prevQuantity + 1);
+  };
+
+  // Decrement quantity (minimum 1)
+  const decrementQuantity = () => {
+    setQuantity(prevQuantity => (prevQuantity > 1 ? prevQuantity - 1 : 1));
   };
 
   return (
@@ -28,57 +61,36 @@ const ProductDetailsPage = () => {
       <Navbar />
       <div className="container mx-auto mt-10 p-5">
         <div className="flex flex-col md:flex-row space-x-6">
+        <ToastContainer />
           <div className="flex-1">
-            <img src={product.image} alt={product.name} className="w-full h-96 object-cover rounded-lg shadow-xl" />
+            <img src={product.imageUrl} alt={product.name} className="w-full h-96 object-cover rounded-lg shadow-xl" />
           </div>
           <div className="flex-1 text-white mt-8 md:mt-0">
             <h1 className="text-4xl font-bold mb-4">{product.name}</h1>
             <p className="text-xl mb-4">${product.price}</p>
             <p className="text-lg mb-6">{product.description}</p>
-            <button className="bg-yellow-400 text-black font-bold py-3 px-8 rounded-lg hover:bg-yellow-500 transition duration-300 transform hover:scale-105 mb-6">
+
+            {/* Quantity Controls */}
+            <div className="mb-6 flex items-center">
+              <button 
+                onClick={decrementQuantity}
+                className="bg-gray-300 text-black font-bold py-2 px-4 rounded-lg hover:bg-gray-400 transition duration-300">
+                -
+              </button>
+              <span className="mx-4 text-lg">{quantity}</span>
+              <button 
+                onClick={incrementQuantity}
+                className="bg-gray-300 text-black font-bold py-2 px-4 rounded-lg hover:bg-gray-400 transition duration-300">
+                +
+              </button>
+            </div>
+
+            {/* Add to Cart Button */}
+            <button 
+              onClick={()=>{handleAddToCart(product._id)}} 
+              className="bg-yellow-400 text-black font-bold py-3 px-8 rounded-lg hover:bg-yellow-500 transition duration-300 transform hover:scale-105 mb-6">
               Add to Cart <FontAwesomeIcon icon={faShoppingCart} className="ml-2" />
             </button>
-            
-            {/* Ratings */}
-            <div className="mt-8">
-              <h2 className="text-2xl font-bold">Rate this product</h2>
-              <div className="flex space-x-2 mt-4">
-                {[1, 2, 3, 4, 5].map((rate) => (
-                  <FontAwesomeIcon
-                    key={rate}
-                    icon={faStar}
-                    className={`text-3xl cursor-pointer ${hoverRating >= rate || rating >= rate ? 'text-yellow-400' : 'text-gray-400'}`}
-                    onClick={() => handleRatingClick(rate)}
-                    onMouseEnter={() => setHoverRating(rate)}
-                    onMouseLeave={() => setHoverRating(0)}
-                  />
-                ))}
-              </div>
-              {rating > 0 && (
-                <p className="mt-4 text-lg">You rated this product {rating} stars!</p>
-              )}
-            </div>
-          </div>
-        </div>
-
-        {/* Reviews Section */}
-        <div className="mt-10">
-          <h2 className="text-3xl font-bold">User Reviews</h2>
-          <div className="space-y-4 mt-6">
-            {product.reviews.map((review) => (
-              <div key={review.id} className="bg-white bg-opacity-10 p-5 rounded-lg shadow-lg">
-                <div className="flex items-center justify-between">
-                  <h3 className="text-xl font-bold text-yellow-400">{review.user}</h3>
-                  <div className="flex">
-                    {[...Array(Math.floor(review.rating))].map((_, index) => (
-                      <FontAwesomeIcon key={index} icon={faStar} className="text-yellow-400 text-lg" />
-                    ))}
-                    {review.rating % 1 !== 0 && <FontAwesomeIcon icon={faStarHalfAlt} className="text-yellow-400 text-lg" />}
-                  </div>
-                </div>
-                <p className="mt-3">{review.comment}</p>
-              </div>
-            ))}
           </div>
         </div>
       </div>

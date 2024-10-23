@@ -10,6 +10,7 @@ import { BrowserRouter as Router, Route, Routes} from 'react-router-dom';
 import AdminLoginPage from './Components/Adminlogin'
 import AdminDashboard from './Components/Adminhome'
 import Product from'./Components/Product'
+import UserManagementPage from './Components/AdminUser'
  // Adjust path based on your project structure
 
 const App = () => {
@@ -22,11 +23,12 @@ const App = () => {
         <Route path='/login' element={<LoginPage/> } />
         <Route path='/' element={<HomePage/>}/> 
         <Route path='/product' element={<ProductPage/>}/> 
-        <Route path='/viewproduct' element={<ProductDetailsPage/>}/> 
+        <Route path='/viewproduct/:id' element={<ProductDetailsPage/>}/> 
         <Route path='/cart' element={  <CartPage/>}/> 
         <Route path='/adminlogin' element={<AdminLoginPage/>}/> 
         <Route path='/admin' element={<AdminDashboard/>}/> 
         <Route path='/admin/product' element={<Product/>}/> 
+        <Route path='/admin/users' element={<UserManagementPage/>}/> 
         
       </Routes>
     </Router>
